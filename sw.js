@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mon-budget-cache-v35';
+const CACHE_NAME = 'mon-budget-cache-v36';
 const URLS_A_METTRE_EN_CACHE = [
   './',
   './index.html',
@@ -6,6 +6,7 @@ const URLS_A_METTRE_EN_CACHE = [
   './css/components.css',
   './css/modals.css',
   './css/responsive.css',
+  './css/oneui.css',
   './js/config.js',
   './js/helpers.js',
   './js/prevision.js',

@@ -1,0 +1,266 @@
+/* ==========================================================================
+   Thème One UI (Samsung) / Material 3 — chargé en dernier, il redéfinit les couleurs et les formes.
+
+   Principes :
+   - Cartes très arrondies, sans bordure ; zone de pouce en bas (barre de navigation flottante).
+   - Thème sombre ET clair, selon le réglage du téléphone.
+   - Une couleur = un sens, pour que chaque écran parle :
+       vert = sain · ambre = vigilance · corail = alerte/dépassement · violet = épargne · bleu = action.
+   - Les anciens noms de variables (--noir, --blanc, --bleu…) sont conservés : leur VALEUR change selon le thème.
+     --blanc est donc « la couleur du texte » (blanc en sombre, presque noir en clair).
+   ========================================================================== */
+
+:root{
+  color-scheme: light dark;
+
+  /* Surfaces et texte (thème sombre par défaut) */
+  --noir:#000000;              /* fond de page */
+  --noir-2:#17171B;            /* cartes */
+  --noir-3:#25252B;            /* champs, éléments en relief */
+  --blanc:#F5F5F8;             /* texte principal */
+  --gris:#9C9CA6;              /* texte secondaire */
+  --gris-2:#B4B4BD;
+  --ligne:rgba(255,255,255,0.08);
+  --piste:rgba(255,255,255,0.10);   /* fond des barres de progression */
+  --sur-accent:#FFFFFF;             /* texte posé sur un bouton coloré */
+  --ombre:0 10px 30px rgba(0,0,0,0.35);
+
+  /* Couleurs qui parlent */
+  --accent:#5B9BFF;            /* action */
+  --sain:#34D399;              /* tout va bien */
+  --vigilance:#FFB547;         /* attention */
+  --alerte:#FF6B7A;            /* dépassement */
+  --epargne:#A18CFF;           /* argent mis de côté */
+
+  /* Anciens noms, redirigés */
+  --bleu:var(--accent);
+  --bleu-clair:var(--accent);
+  --vert:var(--sain);
+  --orange:var(--vigilance);
+  --rouge:var(--alerte);
+
+  --rayon:28px;
+  --rayon-sm:20px;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --noir:#F2F3F7;
+    --noir-2:#FFFFFF;
+    --noir-3:#ECEDF2;
+    --blanc:#17181C;
+    --gris:#6A6D78;
+    --gris-2:#555862;
+    --ligne:rgba(0,0,0,0.08);
+    --piste:rgba(0,0,0,0.08);
+    --ombre:0 8px 24px rgba(30,40,80,0.12);
+    --accent:#1F6BFF;
+    --sain:#0E9F6E;
+    --vigilance:#C47500;
+    --alerte:#D92D4A;
+    --epargne:#6B4EE6;
+  }
+}
+
+/* ---------- Page, police, en-tête ---------- */
+html{-webkit-tap-highlight-color:transparent;}
+body{
+  /* system-ui = la vraie police One UI sur un Samsung ; Inter (hébergée) en repli ailleurs. */
+  font-family:system-ui, 'Samsung One UI Sans', 'SamsungOne', Roboto, 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  background:var(--noir);
+  color:var(--blanc);
+  padding:calc(env(safe-area-inset-top, 0px) + 36px) 16px calc(124px + env(safe-area-inset-bottom, 0px));
+}
+header{margin-bottom:24px; padding:14px 4px 0;}
+header h1{font-size:2.4rem; font-weight:700; letter-spacing:-0.03em; line-height:1.1;}
+header p{font-size:0.95rem; margin-top:6px;}
+.cat-btn, .ajout-btn{
+  background:color-mix(in srgb, var(--accent) 16%, transparent); color:var(--accent);
+}
+.cat-btn:hover, .ajout-btn:hover{background:color-mix(in srgb, var(--accent) 26%, transparent);}
+.cat-btn{padding:12px 20px; font-size:0.88rem;}
+header{flex-wrap:nowrap; align-items:flex-end; gap:12px;}
+header > div:first-child{flex:1; min-width:0;}
+.header-actions{width:auto; flex:none;}
+.header-actions .cat-btn{flex:none; white-space:nowrap;}
+
+/* ---------- Barre de navigation flottante (zone de pouce) ---------- */
+.nav{
+  position:fixed; top:auto; left:50%; transform:translateX(-50%);
+  bottom:calc(12px + env(safe-area-inset-bottom, 0px));
+  width:min(calc(100% - 24px), 460px); margin:0; overflow:visible;
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:2px; padding:6px;
+  border:none; border-radius:34px;
+  background:color-mix(in srgb, var(--noir-2) 84%, transparent);
+  -webkit-backdrop-filter:blur(24px) saturate(160%); backdrop-filter:blur(24px) saturate(160%);
+  box-shadow:var(--ombre), 0 0 0 1px var(--ligne);
+  z-index:40;
+}
+.nav-btn{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  padding:9px 4px 8px; min-height:56px; border-radius:28px;
+  font-size:0.7rem; font-weight:600; color:var(--gris);
+}
+.nav-btn svg{width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; transition:transform .25s var(--spring);}
+.nav-btn:hover{color:var(--blanc);}
+.nav-btn.actif{color:var(--accent);}
+.nav-btn.actif svg{transform:translateY(-1px) scale(1.08);}
+.nav-fond{border-radius:28px; background:color-mix(in srgb, var(--accent) 18%, transparent);}
+
+/* ---------- Cartes : grandes, sans bordure ---------- */
+.resume, .repartition, .entrees-section, .graphique-mois, .historique, .comparatif, .solde-card, .hero{
+  border:none; border-radius:var(--rayon); background:var(--noir-2);
+}
+.carte{border:none; border-radius:24px; background:var(--noir-2); padding:20px 22px;}
+.carte:hover{transform:none; border-color:transparent;}
+.carte:active{transform:scale(.99);}
+.entrees-section, .graphique-mois, .historique{padding:26px 22px;}
+.grille{gap:12px;}
+.section-titre{font-size:1.2rem; margin:6px 4px 14px;}
+.ligne-tx, .ligne-entree, .leg-ligne, .histo-detail-ligne, .resume-pied, .zone-danger, .zone-secours, .entrees-total{border-color:var(--ligne);}
+.objectif{border:none; border-radius:22px; background:var(--noir-3);}
+.histo-resume{border:none; border-radius:18px; background:var(--noir-3);}
+.nav-mois{border:none; border-radius:22px; background:var(--noir-3);}
+.nav-mois button{width:48px; height:44px; border-radius:16px; background:var(--noir-2); color:var(--blanc);}
+.mois-input{background:var(--noir-3); border:none; border-radius:14px; padding:10px 14px;}
+
+/* ---------- Carte résumé : sa couleur raconte l'état du mois ---------- */
+.resume{
+  --etat:var(--sain);
+  position:relative; overflow:hidden; padding:26px 24px;
+  background:
+    radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--etat) 26%, transparent) 0%, transparent 62%),
+    var(--noir-2);
+  transition:background .6s ease;
+}
+.resume[data-etat="sain"]{--etat:var(--sain);}
+.resume[data-etat="vigilance"]{--etat:var(--vigilance);}
+.resume[data-etat="alerte"]{--etat:var(--alerte);}
+.resume[data-etat="depasse"]{--etat:var(--alerte);}
+.resume .resume-valeur{color:var(--etat); font-size:2.9rem; font-weight:700; letter-spacing:-0.035em; line-height:1.1; transition:color .4s ease;}
+.resume .resume-valeur small{color:var(--gris);}
+.message-etat{
+  display:flex; align-items:flex-start; gap:12px; margin-top:16px; padding:13px 15px;
+  border-radius:20px; font-size:0.88rem; font-weight:600; line-height:1.4; color:var(--blanc);
+  background:color-mix(in srgb, var(--etat) 14%, transparent);
+}
+.message-etat::before{
+  content:''; flex:none; width:10px; height:10px; margin-top:0.4em; border-radius:50%;
+  background:var(--etat); box-shadow:0 0 0 5px color-mix(in srgb, var(--etat) 24%, transparent);
+}
+.message-etat:empty{display:none;}
+.barre-globale{height:12px; border-radius:980px; background:var(--piste); margin-top:18px;}
+.barre-globale-fill{border-radius:980px; background:var(--etat, var(--accent)); box-shadow:0 0 14px color-mix(in srgb, var(--etat, var(--accent)) 45%, transparent);}
+.barre{height:10px; border-radius:980px; background:var(--piste);}
+.barre-fill{border-radius:980px;}
+.rang-piste, .comp-piste{background:var(--piste);}
+.pos{color:var(--sain);} .neg{color:var(--alerte);}
+.prevision.alerte, .prevision-globale.alerte{color:var(--vigilance);}
+
+/* ---------- Argent et épargne : deux couleurs, deux sens ---------- */
+.ligne-entree .montant{color:var(--sain);}
+#epargneBody .ligne-entree .montant, #histoEpargneBody .ligne-entree .montant, #totalEpargne{color:var(--epargne);}
+#epargneBody .ligne-entree .dot, #histoEpargneBody .ligne-entree .dot{background:var(--epargne);}
+#totalEntrees{color:var(--sain);}
+.ligne-tx .montant{color:var(--alerte);}
+.objectif-ligne.ok{color:var(--sain);} .objectif-ligne.mal{color:var(--vigilance);}
+.message-epargne{background:color-mix(in srgb, var(--vigilance) 14%, transparent); color:var(--vigilance); border-radius:16px;}
+.rappel-sauvegarde{background:color-mix(in srgb, var(--vigilance) 14%, transparent); color:var(--vigilance); border-radius:20px;}
+.tag-alerte{background:color-mix(in srgb, var(--vigilance) 18%, transparent); color:var(--vigilance);}
+.tag-alerte.rouge{background:color-mix(in srgb, var(--alerte) 18%, transparent); color:var(--alerte);}
+
+/* ---------- Boutons : grands, en pilule ---------- */
+.ajout-btn{padding:13px 0; font-size:0.9rem; margin-top:16px;}
+.ajout-entree-btn, .lien-global, .btn-sauvegarde, .btn-valider{background:var(--accent); color:var(--sur-accent);}
+.ajout-entree-btn:hover, .lien-global:hover, .btn-valider:hover{background:color-mix(in srgb, var(--accent) 88%, var(--blanc));}
+.ajout-entree-btn{padding:12px 18px;}
+.btn-sauvegarde{border-radius:22px; padding:16px; font-size:1rem;}
+.btn-danger{border-color:color-mix(in srgb, var(--alerte) 45%, transparent); color:var(--alerte); padding:12px 18px;}
+.btn-danger:hover{background:color-mix(in srgb, var(--alerte) 12%, transparent);}
+.lien-discret{color:var(--accent); opacity:0.9; padding:10px 2px; font-size:0.84rem;}
+.modif-btn, .suppr-btn{width:38px; height:38px; border:none; border-radius:50%; background:var(--noir-3); font-size:0.95rem; color:var(--gris);}
+.modif-btn:hover{background:color-mix(in srgb, var(--accent) 18%, transparent); color:var(--accent);}
+.suppr-btn:hover{background:color-mix(in srgb, var(--alerte) 16%, transparent); color:var(--alerte);}
+.ligne-tx .edit, .ligne-tx .del, .ligne-entree .edit, .ligne-entree .del{min-width:40px; min-height:40px; border-radius:50%; font-size:1rem;}
+.ligne-tx .del:hover, .ligne-entree .del:hover{color:var(--alerte); background:color-mix(in srgb, var(--alerte) 14%, transparent);}
+.ligne-tx .edit:hover, .ligne-entree .edit:hover{color:var(--accent); background:color-mix(in srgb, var(--accent) 14%, transparent);}
+.c-pastille{background:var(--noir-3);}
+
+/* ---------- Fenêtres : feuille du bas One UI ---------- */
+.overlay{background:rgba(0,0,0,0.45);}
+.modal{
+  background:var(--noir-2); border:none; border-radius:32px 32px 0 0;
+  padding:12px 22px calc(26px + env(safe-area-inset-bottom, 0px));
+}
+@media(min-width:640px){ .modal{border-radius:32px; padding:28px 26px;} }
+.sheet-grabber{background:var(--piste); width:40px;}
+.modal h3{font-size:1.2rem;}
+.champ input, .champ select, .filtres-histo input, .filtres-histo select, .verrou-boite input{
+  background:var(--noir-3); border-radius:18px; padding:15px 16px; font-size:1rem; color:var(--blanc); color-scheme:light dark;
+}
+.input-pourcent{background:var(--noir-3); color:var(--blanc);}
+.champ input[type="date"], .champ input[type="month"], .mois-input-natif{color-scheme:light dark;}
+.modal-actions button{padding:15px 0; font-size:0.95rem;}
+.btn-annuler{background:var(--noir-3) !important; color:var(--blanc) !important;}
+.modal-delete-link button{color:var(--alerte);}
+.erreur-champ{color:var(--alerte);}
+.ecran-verrou{background:var(--noir);}
+
+/* ---------- Retour d'action : toast coloré (la couleur dit ce qui vient de se passer) ---------- */
+.toast{
+  --t:var(--accent);
+  bottom:calc(98px + env(safe-area-inset-bottom, 0px));
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  width:max-content; max-width:min(92vw, 420px); text-align:left;
+  padding:14px 20px; border:none; border-radius:22px;
+  background:color-mix(in srgb, var(--t) 20%, var(--noir-2));
+  color:var(--blanc); box-shadow:var(--ombre), inset 0 0 0 1.5px color-mix(in srgb, var(--t) 55%, transparent);
+  -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
+}
+.toast::before{
+  content:'•'; flex:none; width:24px; height:24px; border-radius:50%; display:grid; place-items:center;
+  background:var(--t); color:var(--sur-accent); font-size:0.8rem; font-weight:800; line-height:1;
+}
+.toast.succes{--t:var(--sain);}    .toast.succes::before{content:'✓';}
+.toast.entree{--t:var(--sain);}    .toast.entree::before{content:'+';}
+.toast.epargne{--t:var(--epargne);} .toast.epargne::before{content:'★';}
+.toast.info{--t:var(--accent);}    .toast.info::before{content:'−';}
+.toast.alerte{--t:var(--vigilance); border:none; color:var(--blanc);} .toast.alerte::before{content:'!';}
+.toast.danger{--t:var(--alerte); border:none; color:var(--blanc);}   .toast.danger::before{content:'!';}
+.toast button{color:var(--blanc); text-decoration:underline; text-underline-offset:3px;}
+@keyframes flashCarte{
+  0%{ background:color-mix(in srgb, var(--accent) 28%, var(--noir-2)); }
+  100%{ background:var(--noir-2); }
+}
+
+/* ---------- Graphiques et courbe ---------- */
+.courbe-tip{background:var(--noir-3); box-shadow:var(--ombre);}
+.c-budget{stroke:var(--gris);}
+.c-curseur{stroke:var(--gris);}
+.c-verdict .bon{color:var(--sain);} .c-verdict .mauvais{color:var(--alerte);}
+.tip-jour{color:var(--vigilance);}
+.leg-ligne .pct-val{color:var(--blanc);}
+
+/* Graphiques à barres : s'adaptent à la largeur au lieu de défiler */
+.barres-mois{overflow:hidden; gap:8px;}
+.barre-col{min-width:0;}
+.barre-col .barre-visuelle{width:min(26px, 80%); border-radius:10px 10px 4px 4px;}
+.barre-col .valeur-barre{font-size:0.66rem;}
+
+/* ---------- Écrans larges (tablette, Galaxy Z Fold déplié) ---------- */
+@media(min-width:700px){
+  body{padding-left:24px; padding-right:24px;}
+  .nav{width:min(520px, 70vw);}
+  .toast{bottom:calc(104px + env(safe-area-inset-bottom, 0px));}
+}
+@media(min-width:1000px){
+  header h1{font-size:2.8rem;}
+}
+@media(max-width:480px){
+  body{padding-left:14px; padding-right:14px;}
+  header h1{font-size:2.2rem;}
+  .resume{padding:24px 20px;}
+  .resume .resume-valeur{font-size:2.6rem;}
+}
+@media (prefers-reduced-motion: reduce){
+  .nav-btn svg{transition:none;}
+}

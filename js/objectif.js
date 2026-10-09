@@ -50,7 +50,7 @@ function renderObjectif(){
         <button type="button" class="modif-btn" id="btnModifierObjectif" title="Modifier l'objectif">✎</button>
       </div>
       <div class="objectif-montants"><b>${fmt(total)}</b> / ${fmt(o.cible)} FCFA · ${Math.round(pct)} %</div>
-      <div class="barre"><div class="barre-fill" style="width:${pct}%; background:${total >= o.cible ? 'var(--vert)' : 'var(--bleu)'}"></div></div>
+      <div class="barre"><div class="barre-fill" style="width:${pct}%; background:${total >= o.cible ? 'var(--sain)' : 'var(--epargne)'}"></div></div>
       ${lignes}
     </div>`;
   document.getElementById('btnModifierObjectif').addEventListener('click', ()=>ouvrirModalObjectif());

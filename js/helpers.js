@@ -25,11 +25,24 @@ const normaliser = s => String(s == null ? '' : s).normalize('NFD').replace(/[\u
 // y compris dans un attribut : le texte saisi doit rester du texte, jamais du code.
 const esc = t => String(t == null ? '' : t).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+// Retour tactile : chaque type de message a sa « signature » de vibration (court = bien, long = attention).
+// Seulement après un geste de la personne (sinon le navigateur bloque et le signale), et jamais si les animations sont réduites.
+const VIBRATIONS = { '':[8], info:[10], succes:[14], entree:[12,40,12], epargne:[14,40,14,40,26], alerte:[34,50,34], danger:[80,60,80] };
+function vibrer(type){
+  try{
+    if(!navigator.vibrate || !(navigator.userActivation && navigator.userActivation.hasBeenActive)) return;
+    if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    navigator.vibrate(VIBRATIONS[type] || VIBRATIONS['']);
+  }catch(e){}
+}
+
 let toastTimer = null;
+// type : '' | info | succes | entree | epargne | alerte | danger — change la couleur, l'icône et la vibration.
 // action (facultatif) : { label, fn } -> bouton dans le message (ex. « Annuler »).
 function toast(message, type, action){
   const el = document.getElementById('toast');
   if(!el) return;
+  vibrer(type || '');
   el.textContent = message;
   el.className = 'toast actif' + (type ? ' ' + type : '');
   if(action){

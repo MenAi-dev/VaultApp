@@ -36,6 +36,17 @@ Ce document résume l'audit réalisé, les corrections apportées et les limites
 - **Code PIN** (4 à 8 chiffres) : empreinte PBKDF2 (150 000 itérations) avec sel, jamais le code en clair. Verrouillage au démarrage et après 1 minute d'absence. Après 5 erreurs : attente de 30 s, doublée à chaque erreur, jusqu'à 15 min.
 - **Récupération** : bouton pour revenir avant la dernière restauration et pour télécharger la copie des données illisibles.
 
+## Design One UI (Samsung / Android récent)
+
+Toute la mise en forme est dans `css/oneui.css`, chargé en dernier : il redéfinit les couleurs (variables CSS) et les formes sans toucher aux autres feuilles.
+
+- **Thèmes** sombre et clair, selon le réglage du téléphone. Les noms de variables historiques (`--noir`, `--blanc`…) sont conservés mais **leur valeur change selon le thème** : `--blanc` est « la couleur du texte ». Pour du texte sur un bouton coloré, utiliser `--sur-accent`.
+- **Couleurs qui ont un sens** : vert = sain · ambre = vigilance · corail = alerte/dépassement · violet = épargne · bleu = action. Les graphiques par catégorie utilisent des teintes à part (`COULEURS_GRAPHIQUE` dans `render.js`) pour ne pas être confondus avec ces états.
+- **État du mois** (`etatBudget()` dans `prevision.js`) : compare la part du budget dépensée au temps écoulé. Seuils : vigilance si l'avance dépasse 15 points ; alerte à partir de 90 % du budget ; dépassé au-delà de 100 %.
+- **Retour d'action** (`toast()` et `vibrer()` dans `helpers.js`) : couleur, icône et vibration par type (`info`, `succes`, `entree`, `epargne`, `alerte`, `danger`). Pas de vibration sans geste de la personne, ni si les animations sont réduites.
+- **Navigation** : barre flottante en bas (zone de pouce), avec les marges de sécurité des écrans à encoche (`viewport-fit=cover`).
+- **Police** : `system-ui` en premier (police One UI native sur Samsung), Inter hébergée en repli.
+
 ## Ce que la CSP autorise
 
 ```
@@ -53,6 +64,7 @@ img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; fo
 - **Clickjacking** : une balise `<meta>` ne permet pas `frame-ancestors`. Sur un hébergement sans en-têtes HTTP (ex. GitHub Pages), l'intégration dans une iframe ne peut pas être bloquée.
 - **Hébergement partagé** : sur `utilisateur.github.io/...`, tous les dépôts du même compte partagent le même `localStorage`. Préférer un domaine dédié si possible.
 - **Service worker** : le nouveau comportement du cache n'a pas pu être testé dans l'environnement de développement. À vérifier sur téléphone (mode avion).
+- **Design non testé sur un vrai Samsung** : vibration, police One UI et dépliage d'un Galaxy Fold sont à vérifier sur l'appareil.
 - **Autres points non traités** : pas de chiffrement des données au repos ; la sauvegarde JSON non chiffrée contient toutes les données en clair.
 
 ## Tests réalisés (navigateur, serveur local)
@@ -66,7 +78,9 @@ img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; fo
 - Chiffrement : aller-retour, mauvais mot de passe, itérations anormales, import de bout en bout.
 - PIN : formats, verrouillage au rechargement, blocage après 5 erreurs, reverrouillage après 61 s (pas après 5 s), changement et retrait du code.
 - Récupération : les deux boutons, échange réversible, « Code oublié ? ».
+- Design : les 4 états du budget, les couleurs des messages, thèmes sombre et clair, onglets Aperçu / Argent / Analyse / Historique, feuille de saisie.
+- **Batterie de non-régression rejouée sur la version finale (design inclus) : 16 contrôles sur 16 réussis** (XSS, validation, CSP, copie de secours, stockage plein, bornes, dates, fuseau, chiffrement, PIN, états et messages). Le cache hors ligne contient bien tous les fichiers de l'application.
 
 ## Historique des versions du cache (`sw.js`)
 
-`v30` → `v35` au fil des corrections. Toute nouvelle modification de code doit incrémenter ce numéro.
+`v30` → `v36` au fil des corrections et du thème One UI (`css/oneui.css`). Toute nouvelle modification de code doit incrémenter ce numéro.

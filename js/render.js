@@ -30,7 +30,8 @@ function situation(){
 }
 
 // Couleurs du graphique d'accueil (volontairement hors bleu, pour bien distinguer les postes).
-const COULEURS_GRAPHIQUE = ['#FF9F0A','#30D158','#BF5AF2','#FF375F','#FFD60A','#AC8E68','#A3E635','#FF6B6B'];
+// Teintes volontairement à l'écart du vert / ambre / corail / violet, qui ont un sens (sain / vigilance / alerte / épargne).
+const COULEURS_GRAPHIQUE = ['#4C8DFF','#22C3E6','#FF7AB6','#D9A441','#C77DFF','#6FA8A0','#FF8A5B','#5B6B8C'];
 
 // Répartition des dépenses du mois par poste.
 function renderGraphiqueAccueil(){
@@ -89,6 +90,9 @@ function rendre(){
   prevRestantTotal = totalRestant;
 
   const pctG = budgetActuel ? Math.min(100, (totalDepense/budgetActuel)*100) : 0;
+  const etat = etatBudget(totalDepense, budgetActuel, ctx.jour, ctx.joursMois);
+  document.querySelector('.resume').dataset.etat = etat.cle;
+  document.getElementById('messageEtat').textContent = etat.message;
   document.getElementById('barreGlobale').style.width = pctG+'%';
   document.getElementById('pctGlobal').textContent = Math.round(pctG)+' %';
   const prevG = previsionFinDeMois(totalDepense, budgetActuel, ctx.jour, ctx.joursMois);
@@ -102,8 +106,8 @@ function rendre(){
     const pctCat = c.budget ? Math.min(100, (dep/c.budget)*100) : 0;
     const depasse = dep > c.budget;
     const proche = !depasse && c.budget > 0 && dep >= c.budget*SEUIL_ALERTE;
-    const couleurBarre = depasse ? 'var(--rouge)' : proche ? 'var(--orange)' : 'var(--bleu)';
-    const couleurReste = depasse ? 'var(--rouge)' : proche ? 'var(--orange)' : 'var(--bleu-clair)';
+    const couleurBarre = depasse ? 'var(--alerte)' : proche ? 'var(--vigilance)' : 'var(--sain)';
+    const couleurReste = couleurBarre;
     const prev = previsionFinDeMois(dep, c.budget, ctx.jour, ctx.joursMois);
     const prevHtml = (prev && prev.alerte)
       ? '<div class="prevision alerte">Budget atteint vers le ' + prev.jourAtteint + ' ' + nomMois + ' à ce rythme</div>'
@@ -382,7 +386,7 @@ function renderGraphiqueEpargne(){
     return `
     <div class="barre-col">
       <div class="valeur-barre">${m.total ? fmt(m.total) : ''}</div>
-      <div class="barre-visuelle" style="height:0px; background:var(--bleu-clair); transition-delay:${i*0.05}s" data-h="${h}"></div>
+      <div class="barre-visuelle" style="height:0px; background:var(--epargne); transition-delay:${i*0.05}s" data-h="${h}"></div>
       <div class="label-barre">${m.label}</div>
     </div>`;
   }).join('');
@@ -425,7 +429,7 @@ function initCourbe(mois, lignes, budgetTotal){
     const ligne = courbeSel ? lignes.find(l=>l.id===courbeSel) : null;
     const filtre = d => !courbeSel || d.cat===courbeSel;
     const budget = ligne ? ligne.budget : budgetTotal;
-    const couleur = ligne ? ligne.couleur : '#409CFF';
+    const couleur = ligne ? ligne.couleur : '#4C8DFF';
     const cur = cumul(mois, J, filtre, jourC);
     const totalC = cur.cum[jourC];
     const proj = (enCours && budget>0) ? previsionFinDeMois(totalC, budget, jourC, J) : null;
@@ -441,7 +445,7 @@ function initCourbe(mois, lignes, budgetTotal){
     svg += `<polyline points="${pts(cur.cum,1,jourC)}" class="c-ligne" stroke="${couleur}"/>`;
     const depasse = budget>0 ? cur.cum.findIndex((v,j)=>j>=1 && v>budget) : -1;
     if(depasse>0) svg += `<polyline points="${pts(cur.cum,Math.max(1,depasse-1),jourC)}" class="c-ligne c-rouge"/>`;
-    if(proj) svg += `<line x1="${X(jourC).toFixed(1)}" y1="${Y(totalC).toFixed(1)}" x2="${X(J).toFixed(1)}" y2="${Y(proj.fin).toFixed(1)}" class="c-proj" stroke="${proj.alerte?'#FF453A':couleur}"/>`;
+    if(proj) svg += `<line x1="${X(jourC).toFixed(1)}" y1="${Y(totalC).toFixed(1)}" x2="${X(J).toFixed(1)}" y2="${Y(proj.fin).toFixed(1)}" class="c-proj" stroke="${proj.alerte?'#FF6B7A':couleur}"/>`;
     svg += `<line id="cCurseur" class="c-curseur" y1="${gT}" y2="${H-gB}" x1="0" x2="0" style="display:none"/><circle id="cPoint" r="4" fill="${couleur}" class="c-point" style="display:none"/>`;
     svg += `<rect id="cZone" x="0" y="0" width="${W}" height="${H-gB}" fill="transparent"/>`;
 

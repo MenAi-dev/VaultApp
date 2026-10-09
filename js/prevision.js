@@ -14,6 +14,21 @@ function contexteMois(){
   return { jour: Number(auj().slice(8, 10)), joursMois: new Date(a, m, 0).getDate() };
 }
 
+// État du mois, en une couleur et une phrase : compare ce qui est dépensé au temps écoulé.
+// cle : sain | vigilance | alerte | depasse (voir css/oneui.css).
+function etatBudget(dep, budget, jour, joursMois){
+  if(!(budget > 0)) return { cle:'sain', message:'Définis un budget pour suivre ton mois.' };
+  const reste = budget - dep;
+  if(reste < 0) return { cle:'depasse', message:'Budget dépassé de ' + fmt(-reste) + ' FCFA. Cet excédent sera pris sur ton épargne.' };
+  const joursRestants = Math.max(1, joursMois - jour + 1);
+  const parJour = fmt(reste / joursRestants);
+  const part = dep / budget, temps = jour / joursMois;
+  if(part >= 0.9) return { cle:'alerte', message:'Presque épuisé : il reste ' + fmt(reste) + ' FCFA pour ' + joursRestants + ' jour' + (joursRestants > 1 ? 's' : '') + '. Garde l\'essentiel.' };
+  if(dep > 0 && part > temps + 0.15) return { cle:'vigilance', message:'Tu dépenses plus vite que le mois n\'avance. Il reste environ ' + parJour + ' FCFA par jour.' };
+  if(dep === 0) return { cle:'sain', message:'Mois tout neuf : environ ' + parJour + ' FCFA disponibles par jour.' };
+  return { cle:'sain', message:'Tu es dans les clous : tu peux dépenser environ ' + parJour + ' FCFA par jour.' };
+}
+
 // Projection linéaire : rythme moyen depuis le 1er du mois, prolongé jusqu'à la fin du mois.
 // Renvoie null tant que c'est trop tôt (peu de données) ou si le budget est déjà atteint.
 function previsionFinDeMois(dep, budget, jour, joursMois){

@@ -62,6 +62,7 @@ async function validerAjout(){
   const note = document.getElementById('inputNote').value.trim();
   let catCible;
   let depAvant;
+  const enEdition = !!depenseEnEdition; // fermerModal() remet depenseEnEdition à null avant le message final
   if(depenseEnEdition){
     const d = depenses.find(x=>x.id===depenseEnEdition);
     if(!d){ fermerModal(); return; }
@@ -79,7 +80,8 @@ async function validerAjout(){
   declencherPulse(document.getElementById('totalDepense'));
   const carteEl = document.querySelector(`.carte[data-cat="${catCible}"]`);
   if(carteEl) carteEl.classList.add('flash');
-  verifierAlerte(catCible, depAvant);
+  toast((enEdition ? 'Dépense modifiée' : 'Dépense enregistrée') + ' · −' + fmt(montant) + ' FCFA', 'info');
+  verifierAlerte(catCible, depAvant); // remplace ce message si le seuil de 80 % ou le budget est franchi
 }
 async function supprimerDepense(id){
   const d = depenses.find(x=>x.id===id);
@@ -166,6 +168,7 @@ async function validerEntree(){
   fermerModalEntree();
   rendre();
   declencherPulse(document.getElementById('totalEntrees'));
+  toast('+' + fmt(montant) + ' FCFA reçus', 'entree');
 }
 async function supprimerEntree(id){
   const e = entrees.find(x=>x.id===id);
@@ -213,6 +216,7 @@ async function validerEpargne(){
   fermerModalEpargne();
   rendre();
   declencherPulse(document.getElementById('totalEpargne'));
+  toast(fmt(montant) + ' FCFA mis de côté, bravo', 'epargne');
 }
 async function supprimerEpargne(id){
   const e = epargnes.find(x=>x.id===id);
