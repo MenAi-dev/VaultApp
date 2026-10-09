@@ -40,25 +40,26 @@ Ce document résume l'audit réalisé, les corrections apportées et les limites
 
 Toute la mise en forme est dans `css/oneui.css`, chargé en dernier : il redéfinit les couleurs (variables CSS) et les formes sans toucher aux autres feuilles.
 
-- **Thèmes** sombre et clair, selon le réglage du téléphone. Les noms de variables historiques (`--noir`, `--blanc`…) sont conservés mais **leur valeur change selon le thème** : `--blanc` est « la couleur du texte ». Pour du texte sur un bouton coloré, utiliser `--sur-accent`.
+- **Thème sombre uniquement.** Il n'y a ni changement de thème ni mode clair (retirés volontairement). Les noms de variables historiques (`--noir`, `--blanc`…) sont conservés et redirigés vers les couleurs de `css/oneui.css`.
+- **Pas d'animations ajoutées** (ondulation, confettis, secousses, glissements, etc. retirés volontairement). Restent seulement les animations d'origine : apparition des cartes, compteur des montants, anneau du graphique.
 - **Couleurs qui ont un sens** : vert = sain · ambre = vigilance · corail = alerte/dépassement · violet = épargne · bleu = action. Les graphiques par catégorie utilisent des teintes à part (`COULEURS_GRAPHIQUE` dans `render.js`) pour ne pas être confondus avec ces états.
 - **État du mois** (`etatBudget()` dans `prevision.js`) : compare la part du budget dépensée au temps écoulé. Seuils : vigilance si l'avance dépasse 15 points ; alerte à partir de 90 % du budget ; dépassé au-delà de 100 %.
 - **Retour d'action** (`toast()` et `vibrer()` dans `helpers.js`) : couleur, icône et vibration par type (`info`, `succes`, `entree`, `epargne`, `alerte`, `danger`). Pas de vibration sans geste de la personne, ni si les animations sont réduites.
 - **Navigation** : barre flottante en bas (zone de pouce), avec les marges de sécurité des écrans à encoche (`viewport-fit=cover`).
 - **Police** : `system-ui` en premier (police One UI native sur Samsung), Inter hébergée en repli.
 
-## Thème clair / sombre / automatique
+## Prévision de fin de mois (`js/prevision.js`)
 
-- **Trois modes** : Auto (suit le téléphone), Clair, Sombre. Bouton rond en haut de l'écran (il fait défiler les trois modes) et sélecteur « Apparence » dans l'onglet Historique.
-- Le choix est mémorisé dans `localStorage` (clé `budgetTheme`). `js/verrou-precoce.js`, chargé dans `<head>`, le pose avant l'affichage : aucun éclair de la mauvaise couleur au démarrage.
-- Mécanisme : l'attribut `data-theme="light"` ou `"dark"` sur `<html>` (aucun attribut = automatique). Les couleurs du thème clair sont écrites **deux fois** dans `css/oneui.css` (bloc `@media (prefers-color-scheme: light)` et bloc `[data-theme="light"]`) : toute modification doit être faite aux deux endroits.
-- La couleur de la barre d'état du téléphone (`theme-color`) suit le thème choisi (`js/theme.js`).
-- Le changement est animé : un cercle de la nouvelle couleur s'étend depuis le bouton (View Transitions), ou un simple fondu sur les navigateurs plus anciens.
+Aucune IA : un calcul simple et explicable, 100 % local.
 
-## Animations (`js/animations.js` + section « Animations » de `css/oneui.css`)
+`fin de mois = dépenses d'aujourd'hui + rythme des dépenses VARIABLES × jours restants + récurrentes encore à venir`
 
-Ondulation au toucher sur les boutons · barres de progression qui se remplissent · icône de navigation qui rebondit · onglets qui glissent depuis le côté d'où on vient · messages qui arrivent en ressort · carte du mois qui émet une onde de couleur quand l'état change (et tremble si le budget est dépassé) · fenêtre qui tremble quand une saisie est refusée · confettis pour une entrée, une épargne ou un objectif atteint (une seule fois) · montant qui « respire » en état d'alerte.
-Toutes sont désactivées si « Réduire les animations » est activé sur le téléphone.
+- **Dépenses variables** : tout ce qui n'est pas une récurrence. Leur rythme (FCFA par jour depuis le 1er) est prolongé jusqu'à la fin du mois.
+- **Récurrentes déjà payées** : comptées telles quelles, jamais « projetées » (un loyer payé le 1er ne se répète pas chaque jour).
+- **Récurrentes à venir ce mois-ci** : ajoutées à leur vraie date (`fixesDuMois()`), ce qui permet aussi de dire « budget atteint le 25 » au bon jour.
+- **Pas de prévision** avant le 5 du mois, sans dépense ni récurrence, ou si le budget est déjà atteint.
+- `etatBudget()` suit la même logique : une récurrence payée n'est pas prise pour une dépense « trop rapide », et les récurrentes à venir sont déduites du « X FCFA par jour » disponible. Si elles suffisent à dépasser le budget, l'état passe en alerte.
+- Limites : le rythme variable est supposé constant (pas de saisonnalité ni de week-ends), et l'application n'apprend pas des mois précédents.
 
 ## Ce que la CSP autorise
 
@@ -91,11 +92,10 @@ img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; fo
 - Chiffrement : aller-retour, mauvais mot de passe, itérations anormales, import de bout en bout.
 - PIN : formats, verrouillage au rechargement, blocage après 5 erreurs, reverrouillage après 61 s (pas après 5 s), changement et retrait du code.
 - Récupération : les deux boutons, échange réversible, « Code oublié ? ».
-- Design : les 4 états du budget, les couleurs des messages, thèmes sombre et clair, onglets Aperçu / Argent / Analyse / Historique, feuille de saisie.
-- Thème : cycle Auto → Clair → Sombre, mémorisation, valeur invalide ignorée, thème forcé alors que le téléphone est dans l'autre mode, combiné avec le verrouillage PIN.
-- Animations : ondulation (créée puis retirée, y compris 5 touchers rapides), confettis, secousse de saisie refusée, onde de la carte quand l'état change (et pas quand il reste le même), objectif fêté une seule fois, glissement directionnel des onglets.
-- **Batterie de non-régression rejouée sur la version finale : 25 contrôles sur 25 réussis** (XSS, validation, CSP, copie de secours, stockage plein, bornes, dates, fuseau, chiffrement, PIN, états et messages, thème, animations). Un défaut a été trouvé et corrigé pendant cette batterie : une ondulation pouvait rester dans la page si l'animation ne se terminait pas ; un retrait de sécurité temporisé a été ajouté. Le cache hors ligne contient bien tous les fichiers de l'application.
+- Design : les 4 états du budget, les couleurs des messages, onglets Aperçu / Argent / Analyse / Historique, feuille de saisie.
+- Prévision : sans récurrences, résultat identique à l'ancien calcul (203 911 pour 59 200 au 9e jour) ; avec un loyer payé le 1er, plus de fausse alerte (103 333 → 54 444) ; récurrente à venir ajoutée à sa date ; filtrage par poste ; alerte quand les seules récurrentes à venir dépassent le budget ; cas limites (trop tôt, budget atteint, rien à projeter) ; courbe et messages affichés sans erreur.
+- **Batterie de non-régression rejouée après le retrait du thème et des animations : 24 contrôles sur 24 réussis** (application toujours sombre même si le téléphone est en mode clair, plus aucune fonction de thème ni d'animation, ajout de dépense / entrée / épargne, navigation, saisie refusée, XSS, CSP, copie de secours, stockage plein, bornes, dates, fuseau, chiffrement, PIN, prévision, états du budget). Console sans erreur. Le cache hors ligne contient bien tous les fichiers de l'application.
 
 ## Historique des versions du cache (`sw.js`)
 
-`v30` → `v38` au fil des corrections, du thème One UI (`css/oneui.css`), du choix de thème et des animations. Toute nouvelle modification de code doit incrémenter ce numéro.
+`v30` → `v41` au fil des corrections, du thème One UI sombre (`css/oneui.css`) et de la prévision améliorée. Toute nouvelle modification de code doit incrémenter ce numéro.

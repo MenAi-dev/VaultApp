@@ -12,13 +12,10 @@ function moyenneEpargne3Mois(){
   return total / 3;
 }
 
-let objectifAtteintAvant = null; // null = pas encore évalué (1re ouverture)
-
 function renderObjectif(){
   const zone = document.getElementById('objectifBody');
   if(!zone) return;
   if(!objectifEpargne){
-    objectifAtteintAvant = null;
     zone.innerHTML = '<button type="button" class="cat-btn" id="btnDefinirObjectif">+ Définir un objectif d\'épargne</button>';
     document.getElementById('btnDefinirObjectif').addEventListener('click', ()=>ouvrirModalObjectif());
     return;
@@ -29,14 +26,6 @@ function renderObjectif(){
   const reste = Math.max(0, o.cible - total);
   const mois = moisRestantsJusqua(o.date);
   const dateLibelle = new Date(o.date + 'T00:00:00').toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
-
-  // Fête l'objectif quand il vient d'être atteint (jamais à l'ouverture de l'application).
-  const atteint = total >= o.cible;
-  if(objectifAtteintAvant === false && atteint){
-    setTimeout(()=>confettis(document.querySelector('#objectifBody .objectif'), [couleurTheme('--epargne'), couleurTheme('--sain'), '#FFD166', '#FFFFFF']), 300);
-    toast('Objectif atteint, félicitations !', 'epargne');
-  }
-  objectifAtteintAvant = atteint;
 
   let lignes = '';
   if(total >= o.cible){

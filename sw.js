@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mon-budget-cache-v38';
+const CACHE_NAME = 'mon-budget-cache-v41';
 const URLS_A_METTRE_EN_CACHE = [
   './',
   './index.html',
@@ -17,8 +17,6 @@ const URLS_A_METTRE_EN_CACHE = [
   './js/modals.js',
   './js/donnees.js',
   './js/securite.js',
-  './js/theme.js',
-  './js/animations.js',
   './js/verrou-precoce.js',
   './js/recurrentes.js',
   './js/objectif.js',

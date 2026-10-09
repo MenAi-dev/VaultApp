@@ -90,17 +90,18 @@ function rendre(){
   prevRestantTotal = totalRestant;
 
   const pctG = budgetActuel ? Math.min(100, (totalDepense/budgetActuel)*100) : 0;
-  const etat = etatBudget(totalDepense, budgetActuel, ctx.jour, ctx.joursMois);
-  const carteResume = document.querySelector('.resume');
-  const etatAvant = carteResume.dataset.etat;
-  carteResume.dataset.etat = etat.cle;
-  if(etatAvant && etatAvant !== etat.cle) animerEtat(carteResume); // pas à la 1re ouverture, seulement quand l'état change
+  const fixesTous = fixesDuMois();
+  const etat = etatBudget(totalDepense, budgetActuel, ctx.jour, ctx.joursMois, fixesTous);
+  document.querySelector('.resume').dataset.etat = etat.cle;
   document.getElementById('messageEtat').textContent = etat.message;
   document.getElementById('barreGlobale').style.width = pctG+'%';
   document.getElementById('pctGlobal').textContent = Math.round(pctG)+' %';
-  const prevG = previsionFinDeMois(totalDepense, budgetActuel, ctx.jour, ctx.joursMois);
+  const prevG = previsionFinDeMois(totalDepense, budgetActuel, ctx.jour, ctx.joursMois, fixesTous);
   const elPrevG = document.getElementById('previsionGlobale');
-  elPrevG.textContent = (prevG && prevG.alerte) ? 'Au rythme actuel, le budget du mois sera dépassé (~' + fmt(prevG.fin) + ' FCFA)' : '';
+  elPrevG.textContent = (prevG && prevG.alerte)
+    ? 'Au rythme actuel, le budget du mois sera dépassé (~' + fmt(prevG.fin) + ' FCFA'
+      + (fixesTous.totalAVenir > 0 ? ', dont ' + fmt(fixesTous.totalAVenir) + ' de récurrentes à venir' : '') + ')'
+    : '';
   elPrevG.className = 'prevision-globale alerte';
 
   document.getElementById('grille').innerHTML = CATEGORIES.map((c,i)=>{
@@ -111,7 +112,7 @@ function rendre(){
     const proche = !depasse && c.budget > 0 && dep >= c.budget*SEUIL_ALERTE;
     const couleurBarre = depasse ? 'var(--alerte)' : proche ? 'var(--vigilance)' : 'var(--sain)';
     const couleurReste = couleurBarre;
-    const prev = previsionFinDeMois(dep, c.budget, ctx.jour, ctx.joursMois);
+    const prev = previsionFinDeMois(dep, c.budget, ctx.jour, ctx.joursMois, fixesDuMois(c.id));
     const prevHtml = (prev && prev.alerte)
       ? '<div class="prevision alerte">Budget atteint vers le ' + prev.jourAtteint + ' ' + nomMois + ' à ce rythme</div>'
       : '';
@@ -135,7 +136,12 @@ function rendre(){
       ${prevHtml}
       <button class="ajout-btn" data-cat="${esc(c.id)}">+ Ajouter une dépense</button>
     </div>`;
-  }).join('');
+  }).join('') + `
+    <button type="button" class="carte-ajout" id="btnTuileCat">
+      <span class="carte-ajout-plus" aria-hidden="true">+</span>
+      <span>Nouvelle catégorie</span>
+    </button>`;
+  document.getElementById('btnTuileCat').addEventListener('click', ouvrirModalCategorie);
   document.querySelectorAll('.ajout-btn').forEach(b=>{
     b.addEventListener('click', ()=>ouvrirModal(b.dataset.cat));
   });
@@ -435,7 +441,7 @@ function initCourbe(mois, lignes, budgetTotal){
     const couleur = ligne ? ligne.couleur : '#4C8DFF';
     const cur = cumul(mois, J, filtre, jourC);
     const totalC = cur.cum[jourC];
-    const proj = (enCours && budget>0) ? previsionFinDeMois(totalC, budget, jourC, J) : null;
+    const proj = (enCours && budget>0) ? previsionFinDeMois(totalC, budget, jourC, J, fixesDuMois(courbeSel)) : null;
     const ymax = Math.max(budget, totalC, proj ? proj.fin : 0, 1) * 1.1;
     const X = d => gL + (d-1)/(J-1)*(W-gL-gR);
     const Y = v => gT + (1 - v/ymax)*(H-gT-gB);
