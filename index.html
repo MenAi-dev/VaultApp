@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Budget</title>
+<script src="js/verrou-precoce.js"></script>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Mon Budget">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/modals.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1>Mon budget</h1>
+      <p>Suivi des dépenses par poste, en FCFA.</p>
+    </div>
+    <div class="header-actions">
+      <button class="cat-btn" id="btnAjoutCat">+ Catégorie</button>
+    </div>
+  </header>
+
+  <nav class="nav" id="nav">
+    <button class="nav-btn actif" data-panel="apercu"><span class="nav-fond"></span>Aperçu</button>
+    <button class="nav-btn" data-panel="entrees"><span class="nav-fond"></span>Argent</button>
+    <button class="nav-btn" data-panel="analyse"><span class="nav-fond"></span>Analyse</button>
+    <button class="nav-btn" data-panel="historique"><span class="nav-fond"></span>Historique</button>
+  </nav>
+
+  <div class="panel actif" data-panel="apercu">
+  <div class="rappel-sauvegarde" id="rappelSauvegarde" hidden>
+    <span id="rappelTexte"></span>
+    <button type="button" class="lien-discret" id="btnRappelSauvegarde">Sauvegarder</button>
+  </div>
+
+  <div class="resume">
+    <div class="label" id="labelDepense">Restant ce mois</div>
+    <div class="resume-valeur pos" id="totalRestant">0 <small>FCFA</small></div>
+    <div class="barre-globale"><div class="barre-globale-fill" id="barreGlobale"></div></div>
+    <div class="barre-globale-txt">
+      <span><b id="totalDepense">0 FCFA</b> dépensés sur <b id="totalBudget">0 FCFA</b></span>
+      <span id="pctGlobal">0 %</span>
+    </div>
+    <div class="prevision-globale" id="previsionGlobale"></div>
+    <div class="resume-pied">
+      <span>Argent en poche : <b id="soldeDispo">0 FCFA</b></span>
+      <button class="lien-discret" id="btnModifierGlobal">Modifier le budget</button>
+    </div>
+  </div>
+
+  <div class="repartition" id="blocRepartition" hidden>
+    <div class="donut-holder">
+      <div id="donut"></div>
+      <div class="donut-center">
+        <div class="pct" id="donutTotal">0</div>
+        <div class="lbl">dépensés</div>
+      </div>
+    </div>
+    <div class="legende-lignes" id="legende"></div>
+  </div>
+
+  <h2 class="section-titre" id="titrePostes">Postes</h2>
+  <div class="grille" id="grille"></div>
+  </div>
+
+  <div class="panel" data-panel="entrees">
+  <div class="entrees-section">
+    <div class="entrees-head">
+      <div>
+        <h2>Entrées d'argent</h2>
+        <div class="sous">Salaire, ventes, cadeaux... tout ce que tu reçois</div>
+      </div>
+      <button class="ajout-entree-btn" id="btnAjoutEntree">+ Ajouter une entrée</button>
+    </div>
+    <div class="entrees-total">
+      <div class="label">Total des entrées enregistrées</div>
+      <div class="valeur" id="totalEntrees">0 <small>FCFA</small></div>
+    </div>
+    <div id="entreesBody"></div>
+  </div>
+
+  <div class="entrees-section">
+    <div class="entrees-head">
+      <div>
+        <h2>Épargne</h2>
+        <div class="sous">Ce que tu mets de côté — non compté comme une dépense</div>
+      </div>
+      <button class="ajout-entree-btn" id="btnAjoutEpargne">+ Ajouter une épargne</button>
+    </div>
+    <div class="entrees-total">
+      <div class="label">Total épargné</div>
+      <div class="valeur" id="totalEpargne">0 <small>FCFA</small></div>
+    </div>
+    <div class="message-epargne" id="messageEpargne" style="display:none"></div>
+    <div id="objectifBody"></div>
+    <div id="epargneBody"></div>
+  </div>
+  </div>
+
+  <div class="panel" data-panel="analyse">
+  <div class="graphique-mois">
+    <div class="graphique-mois-head">
+      <h2>Vue mensuelle</h2>
+      <div class="mois-select-wrap">
+        <span class="mois-input" id="moisSelectLabel">—</span>
+        <input type="month" class="mois-input-natif" id="moisSelect" aria-label="Choisir le mois">
+      </div>
+    </div>
+    <div class="mois-stats">
+      <div class="item">
+        <div class="label">Dépensé ce mois</div>
+        <div class="valeur" id="moisDepense">0 FCFA</div>
+      </div>
+      <div class="item">
+        <div class="label">Entrées ce mois</div>
+        <div class="valeur" id="moisEntree">0 FCFA</div>
+      </div>
+    </div>
+    <div class="vue-mois" id="barresMois"></div>
+  </div>
+
+  <div class="graphique-mois">
+    <div class="graphique-mois-head">
+      <h2>Revenus</h2>
+    </div>
+    <div class="mois-stats">
+      <div class="item">
+        <div class="label">Moyenne (6 derniers mois)</div>
+        <div class="valeur" id="revenuMoyenne">0 FCFA</div>
+      </div>
+      <div class="item">
+        <div class="label">Ce mois-ci</div>
+        <div class="valeur" id="revenuCeMois">0 FCFA</div>
+      </div>
+    </div>
+    <div class="barres-mois" id="barresRevenu"></div>
+  </div>
+
+  <div class="graphique-mois">
+    <div class="graphique-mois-head">
+      <h2>Épargne</h2>
+    </div>
+    <div class="mois-stats">
+      <div class="item">
+        <div class="label">Moyenne (6 derniers mois)</div>
+        <div class="valeur" id="epargneMoyenne">0 FCFA</div>
+      </div>
+      <div class="item">
+        <div class="label">Ce mois-ci</div>
+        <div class="valeur" id="epargneCeMois">0 FCFA</div>
+      </div>
+    </div>
+    <div class="barres-mois" id="barresEpargne"></div>
+  </div>
+
+  </div>
+
+  <div class="panel" data-panel="historique">
+  <div class="historique">
+    <h2>Historique</h2>
+    <div class="sous">Les dépenses du mois choisi. Pour retrouver une ancienne dépense, utilise la recherche.</div>
+    <div class="nav-mois" id="navMoisHisto">
+      <button type="button" id="moisHistoPrec" aria-label="Mois précédent">‹</button>
+      <span id="moisHistoLabel"></span>
+      <button type="button" id="moisHistoSuiv" aria-label="Mois suivant">›</button>
+    </div>
+    <div id="histoResumeMois"></div>
+    <div class="filtres-histo">
+      <input type="search" id="filtreQ" placeholder="Rechercher (note, poste, montant)…" autocomplete="off">
+      <div class="filtres-ligne">
+        <select id="filtreCat" aria-label="Filtrer par poste"></select>
+      </div>
+      <div class="filtres-resume">
+        <span id="filtreResumeTexte"></span>
+        <button type="button" class="lien-discret" id="btnResetFiltres" hidden>Effacer les filtres</button>
+      </div>
+    </div>
+    <div id="histoBody"></div>
+  </div>
+
+  <div class="historique">
+    <h2>Historique de l'épargne</h2>
+    <div class="sous">Dernières épargnes enregistrées</div>
+    <div id="histoEpargneBody"></div>
+  </div>
+
+  <div class="historique" id="blocRecurrentes">
+    <h2>Dépenses récurrentes</h2>
+    <div class="sous">Ajoutées automatiquement chaque mois, sans les ressaisir.</div>
+    <div id="recBody"></div>
+    <div class="donnees-actions">
+      <button type="button" class="cat-btn" id="btnAjoutRec">+ Ajouter une récurrence</button>
+    </div>
+  </div>
+
+  <div class="historique" id="blocSauvegarde">
+    <h2>Sauvegarde</h2>
+    <div class="sous">Tes données sont enregistrées uniquement sur cet appareil. Si tu changes de téléphone ou effaces les données du navigateur, elles disparaissent.</div>
+    <button type="button" class="btn-sauvegarde" id="btnExportJson">💾 Sauvegarder mes données</button>
+    <div class="donnees-info" id="infoSauvegarde"></div>
+    <div class="donnees-aide">Envoie le fichier à toi-même (WhatsApp, e-mail, Drive…) pour le garder en lieu sûr. Pour récupérer tes données, utilise « Restaurer ».</div>
+    <div class="donnees-actions">
+      <button type="button" class="lien-discret" id="btnImport">Restaurer une sauvegarde</button>
+      <button type="button" class="lien-discret" id="btnExportCsv">Exporter pour Excel (CSV)</button>
+      <input type="file" id="inputImport" accept=".json,application/json" hidden>
+    </div>
+    <div class="donnees-actions">
+      <button type="button" class="lien-discret" id="btnExportChiffre">🔒 Sauvegarde chiffrée (mot de passe)</button>
+    </div>
+    <div class="donnees-aide">La sauvegarde chiffrée est illisible sans son mot de passe : c'est le bon choix pour l'envoyer par WhatsApp ou e-mail.</div>
+    <div class="zone-secours" id="zoneSecours" hidden>
+      <div class="donnees-aide">Récupération</div>
+      <div class="donnees-actions">
+        <button type="button" class="lien-discret" id="btnRecupAvantImport" hidden>Revenir à l'état d'avant la dernière restauration</button>
+        <button type="button" class="lien-discret" id="btnRecupCorrompu" hidden>Télécharger la copie des données illisibles</button>
+      </div>
+    </div>
+    <div class="zone-danger">
+      <button type="button" class="btn-danger" id="btnReset">Supprimer toutes les dépenses</button>
+    </div>
+  </div>
+
+  <div class="historique" id="blocVerrou">
+    <h2>Verrouillage</h2>
+    <div class="sous">Demande un code PIN à l'ouverture de l'application et après une minute d'absence. Cela protège contre un regard curieux, mais ne chiffre pas les données stockées sur l'appareil.</div>
+    <div class="donnees-info" id="infoVerrou"></div>
+    <div class="donnees-actions">
+      <button type="button" class="lien-discret" id="btnPinDefinir">Définir un code PIN</button>
+      <button type="button" class="lien-discret" id="btnPinRetirer" hidden>Désactiver le code</button>
+    </div>
+  </div>
+  </div>
+
+  <footer>Les données sont sauvegardées automatiquement sur cet appareil.</footer>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal"><div class="sheet-grabber"></div>
+    <h3 id="modalTitre">Ajouter une dépense</h3>
+    <div class="sub" id="modalSub"></div>
+    <div class="champ" id="champCat" hidden>
+      <label for="inputCat">Poste</label>
+      <select id="inputCat"></select>
+    </div>
+    <div class="champ">
+      <label for="inputMontant">Montant (FCFA)</label>
+      <input type="number" id="inputMontant" placeholder="ex : 1500" min="1">
+    </div>
+    <div class="champ">
+      <label for="inputDate">Date</label>
+      <input type="date" id="inputDate">
+    </div>
+    <div class="champ">
+      <label for="inputNote">Note (optionnel)</label>
+      <input type="text" id="inputNote" maxlength="200" placeholder="ex : taxi, marché...">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-annuler" id="btnAnnuler">Annuler</button>
+      <button class="btn-valider" id="btnValider">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlayBudget">
+  <div class="modal"><div class="sheet-grabber"></div>
+    <h3>Modifier le budget</h3>
+    <div class="sub" id="modalBudgetSub"></div>
+    <div class="champ">
+      <label for="inputBudget">Nouveau montant (FCFA)</label>
+      <input type="number" id="inputBudget" placeholder="ex : 30000" min="0">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-annuler" id="btnAnnulerBudget">Annuler</button>
+      <button class="btn-valider" id="btnValiderBudget">Enregistrer</button>
+    </div>
+    <div class="modal-delete-link">
+      <button type="button" id="btnSupprimerCat">Supprimer cette catégorie</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlayGlobal">
+  <div class="modal modal-large"><div class="sheet-grabber"></div>
+    <h3>Modifier le budget global</h3>
+    <div class="sub">Définis le montant total, puis répartis-le en pourcentage entre tes postes.</div>
+    <div class="champ">
+      <label for="inputGlobalMontant">Budget global (FCFA)</label>
+      <input type="number" id="inputGlobalMontant" min="0">
+    </div>
+    <div class="repartition-pourcent" id="repartitionPourcent"></div>
+    <div class="pourcent-total" id="pourcentTotalTxt">Total : 0%</div>
+    <div class="modal-actions">
+      <button class="btn-annuler" id="btnAnnulerGlobal">Annuler</button>
+      <button class="btn-valider" id="btnValiderGlobal">Appliquer la répartition</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlayEntree">
+  <div class="modal"><div class="sheet-grabber"></div>
+    <h3 id="entreeTitre">Ajouter une entrée</h3>
+    <div class="sub">Argent reçu</div>
+    <div class="champ">
+      <label for="inputEntreeMontant">Montant (FCFA)</label>
+      <input type="number" id="inputEntreeMontant" placeholder="ex : 50000" min="1">
+    </div>
+    <div class="champ">
+      <label for="inputEntreeDate">Date</label>
+      <input type="date" id="inputEntreeDate">
+    </div>
+    <div class="champ">
+      <label for="inputEntreeNote">Source (optionnel)</label>
+      <input type="text" id="inputEntreeNote" maxlength="200" placeholder="ex : salaire, vente...">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-annuler" id="btnAnnulerEntree">Annuler</button>
+      <button class="btn-valider" id="btnValiderEntree">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlayEpargne">
+  <div class="modal"><div class="sheet-grabber"></div>
+    <h3 id="epargneTitre">Ajouter une épargne</h3>
+    <div class="sub">Montant mis de côté ce mois-ci</div>
+    <div class="champ">
+      <label for="inputEpargneMontant">Montant (FCFA)</label>
+      <input type="number" id="inputEpargneMontant" placeholder="ex : 20000" min="1">
+    </div>
+    <div class="champ">
+      <label for="inputEpargneDate">Date</label>
+      <input type="date" id="inputEpargneDate">
+    </div>
+    <div class="champ">
+      <label for="inputEpargneNote">Note (optionnel)</label>
+      <input type="text" id="inputEpargneNote" maxlength="200" placeholder="ex : épargne du mois">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-annuler" id="btnAnnulerEpargne">Annuler</button>
+      <button class="btn-valider" id="btnValiderEpargne">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlayCategorie">
+  <div class="modal"><div class="sheet-grabber"></div>
+    <h3>Ajouter une catégorie</h3>
+    <div class="sub">Un nouveau poste de budget</div>
+    <div class="champ">
+      <label for="inputCatNom">Nom</label>
+      <input type="text" id="inputCatNom" maxlength="40" placeholder="ex : Santé">
+    </div>
+    <div class="champ">
+      <label for="inputCatBudget">Budget (FCFA)</label>
+      <input type="number" id="inputCatBudget" placeholder="ex : 5000" min="0">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-annuler" id="btnAnnulerCat">Annuler</button>
+      <button class="btn-valider" id="btnValiderCat">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlayObjectif">
+  <div class="modal"><div class="sheet-grabber"></div>
+    <h3 id="objTitre">Nouvel objectif d'épargne</h3>
+    <div class="sub">La progression est calculée sur ton total épargné</div>
+    <div class="champ">
+      <label for="objNom">Nom (optionnel)</label>
+      <input type="text" id="objNom" maxlength="40" placeholder="ex : Fonds d'urgence">
+    </div>
+    <div class="champ">
+      <label for="objCible">Montant à atteindre (FCFA)</label>
+      <input type="number" id="objCible" placeholder="ex : 300000" min="1">
+    </div>
+    <div class="champ">
+      <label for="objDate">Date d'échéance</label>
+      <input type="date" id="objDate">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-annuler" id="btnAnnulerObjectif">Annuler</button>
+      <button class="btn-valider" id="btnValiderObjectif">Créer</button>
+    </div>
+    <div class="modal-delete-link" id="objSuppr" hidden>
+      <button type="button" id="btnSupprimerObjectif">Supprimer cet objectif</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlayRec">
+  <div class="modal"><div class="sheet-grabber"></div>
+    <h3 id="recTitre">Nouvelle dépense récurrente</h3>
+    <div class="sub">Ajoutée automatiquement chaque mois</div>
+    <div class="champ">
+      <label for="recCat">Poste</label>
+      <select id="recCat"></select>
+    </div>
+    <div class="champ">
+      <label for="recMontant">Montant (FCFA)</label>
+      <input type="number" id="recMontant" placeholder="ex : 1500" min="1">
+    </div>
+    <div class="champ">
+      <label for="recJour">Jour du mois (1 à 31)</label>
+      <input type="number" id="recJour" placeholder="ex : 5" min="1" max="31">
+      <div class="hint" id="recHint"></div>
+    </div>
+    <div class="champ">
+      <label for="recNote">Note (optionnel)</label>
+      <input type="text" id="recNote" maxlength="200" placeholder="ex : abonnement, loyer...">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-annuler" id="btnAnnulerRec">Annuler</button>
+      <button class="btn-valider" id="btnValiderRec">Ajouter</button>
+    </div>
+    <div class="modal-delete-link" id="recSuppr" hidden>
+      <button type="button" id="btnSupprimerRec">Supprimer cette récurrence</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlaySecret">
+  <div class="modal"><div class="sheet-grabber"></div>
+    <h3 id="secretTitre"></h3>
+    <div class="sub" id="secretSub"></div>
+    <div class="champ">
+      <label for="secretInput" id="secretLabel"></label>
+      <input type="password" id="secretInput" autocomplete="off">
+    </div>
+    <div class="champ" id="secretChamp2" hidden>
+      <label for="secretInput2">Confirme la saisie</label>
+      <input type="password" id="secretInput2" autocomplete="off">
+    </div>
+    <div class="erreur-champ" id="secretErreur" role="alert"></div>
+    <div class="modal-actions">
+      <button class="btn-annuler" id="btnAnnulerSecret" type="button">Annuler</button>
+      <button class="btn-valider" id="btnValiderSecret" type="button">Valider</button>
+    </div>
+  </div>
+</div>
+
+<div class="ecran-verrou" id="ecranVerrou" role="dialog" aria-modal="true" aria-labelledby="verrouTitre">
+  <div class="verrou-boite">
+    <div class="verrou-icone" aria-hidden="true">🔒</div>
+    <h2 id="verrouTitre">Mon Budget</h2>
+    <div class="sub">Entre ton code PIN</div>
+    <input type="password" id="verrouInput" inputmode="numeric" autocomplete="off" maxlength="8" aria-label="Code PIN">
+    <div class="erreur-champ" id="verrouErreur" role="alert"></div>
+    <button type="button" class="btn-valider verrou-btn" id="btnDeverrouiller">Déverrouiller</button>
+    <button type="button" class="lien-discret" id="btnCodeOublie">Code oublié ?</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="js/config.js"></script>
+<script src="js/helpers.js"></script>
+<script src="js/prevision.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/budgets.js"></script>
+<script src="js/render.js"></script>
+<script src="js/historique.js"></script>
+<script src="js/modals.js"></script>
+<script src="js/donnees.js"></script>
+<script src="js/securite.js"></script>
+<script src="js/recurrentes.js"></script>
+<script src="js/objectif.js"></script>
+<script src="js/events.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

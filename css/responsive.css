@@ -1,0 +1,28 @@
+  footer{text-align:center; color:var(--gris); font-size:0.76rem; margin-top:44px;}
+
+  /* --- Ajustements téléphone (petits écrans) --- */
+  @media(max-width:480px){
+    body{padding:28px 14px 80px;}
+    header h1{font-size:1.6rem;}
+    header p{font-size:0.85rem;}
+    .header-actions{width:100%;}
+    .header-actions .cat-btn{flex:1;}
+    .stat .valeur{font-size:1.7rem;}
+    .hero > div{padding:20px 18px;}
+    .repartition{padding:20px 18px;}
+    .entrees-section, .graphique-mois, .comparatif, .historique{padding:20px 16px;}
+    .comp-ligne{grid-template-columns:64px 1fr 64px; gap:8px; font-size:0.74rem;}
+    .mois-stats{gap:18px;}
+    .barres-mois{gap:10px;}
+    .barre-col{min-width:36px;}
+  }
+  @media(max-width:360px){
+    .comp-ligne{grid-template-columns:52px 1fr 56px;}
+  }
+
+  /* --- Ajustements grand écran (ordinateur) --- */
+  @media(min-width:1000px){
+    .wrap{max-width:980px;}
+    body{padding:56px 24px 100px;}
+    .grille{grid-template-columns: repeat(auto-fill, minmax(280px,1fr));}
+  }

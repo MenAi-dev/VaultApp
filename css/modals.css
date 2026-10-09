@@ -1,0 +1,85 @@
+  .overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0.4);
+    -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%);
+    display:none; align-items:flex-end; justify-content:center; z-index:50;
+  }
+  @media(min-width:640px){ .overlay{align-items:center; padding:20px;} }
+  .overlay.actif{display:flex;}
+  .modal{
+    background:var(--noir-2); border:1px solid var(--ligne); border-top:none;
+    border-radius:24px 24px 0 0;
+    padding:10px 22px 28px; width:100%; max-width:480px;
+  }
+  @media(min-width:640px){ .modal{border:1px solid var(--ligne); border-radius:var(--rayon); max-width:340px; padding:26px 24px;} }
+  .sheet-grabber{width:36px; height:5px; border-radius:3px; background:var(--ligne); margin:0 auto 18px;}
+  @media(min-width:640px){ .sheet-grabber{display:none;} }
+  .overlay.actif .modal{animation: sheetUp .38s var(--spring) both;}
+  @media(min-width:640px){ .overlay.actif .modal{animation: modalPop .28s var(--spring) both;} }
+  .modal h3{font-size:1.05rem; font-weight:700; margin:0 0 4px;}
+  .modal .sub{color:var(--gris); font-size:0.8rem; margin-bottom:18px;}
+  .champ{margin-bottom:14px;}
+  .champ label{display:block; font-size:0.78rem; color:var(--gris); margin-bottom:6px;}
+  .champ input, .champ select{
+    width:100%; background:var(--noir-3); border:none; color:var(--blanc);
+    padding:12px 14px; border-radius:var(--rayon-sm); font-size:0.95rem; font-family:inherit;
+  }
+  .champ select{color-scheme:dark;}
+  .champ .hint{color:var(--gris); font-size:0.76rem; margin-top:6px; min-height:1em;}
+  .champ input:focus, .champ select:focus{outline:2px solid var(--bleu); outline-offset:1px;}
+  .champ input[type="date"], .champ input[type="month"]{color-scheme:dark;}
+  .modal-actions{display:flex; gap:10px; margin-top:20px;}
+  .modal-actions button{flex:1; padding:12px 0; border-radius:980px; font-size:0.9rem; font-weight:600; cursor:pointer; border:none; transition:transform .15s var(--spring), background .15s ease;}
+  .modal-actions button:active{transform:scale(.97);}
+  .btn-annuler{background:var(--noir-3) !important; border:none !important; color:var(--blanc);}
+  .btn-valider{background:var(--bleu); color:var(--blanc);}
+  .btn-valider:hover{background:var(--bleu-clair);}
+  .modal-delete-link{margin-top:16px; text-align:center;}
+  .modal-delete-link button{background:none; border:none; color:var(--rouge); font-size:0.82rem; cursor:pointer;}
+
+  .modal-large{max-width:480px;}
+  @media(min-width:640px){ .modal-large{max-width:400px;} }
+  @keyframes sheetUp{
+    from{ opacity:0; transform:translateY(100%); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .repartition-pourcent{
+    display:flex; flex-direction:column; gap:9px; margin:16px 0 6px;
+    max-height:250px; overflow-y:auto; padding-right:4px;
+  }
+  .pourcent-ligne{display:grid; grid-template-columns:9px 1fr 66px 12px; align-items:center; gap:10px; font-size:0.85rem;}
+  .pourcent-ligne .dot{width:9px; height:9px; border-radius:50%; flex-shrink:0;}
+  .pourcent-ligne .nom{color:var(--blanc);}
+  .input-pourcent{
+    width:66px; background:var(--noir-3); border:none; color:var(--blanc);
+    padding:8px 9px; border-radius:10px; font-size:0.85rem; text-align:right; font-family:inherit;
+  }
+  .input-pourcent:focus{outline:2px solid var(--bleu); outline-offset:1px;}
+  .pct-symbol{color:var(--gris); font-size:0.8rem;}
+  .pourcent-total{
+    display:block; font-size:0.8rem; color:var(--gris);
+    padding-top:12px; border-top:1px solid var(--ligne); margin-top:6px;
+  }
+  .pourcent-total.ok{color:var(--bleu-clair);}
+  .pourcent-total.attention{color:var(--rouge);}
+
+  .erreur-champ{color:var(--rouge); font-size:0.8rem; min-height:1.1em; margin-top:2px;}
+  .zone-secours{margin-top:18px; padding-top:14px; border-top:1px solid var(--ligne);}
+
+  /* Verrouillage par code PIN : l'application entière est masquée tant que le code n'est pas saisi. */
+  .ecran-verrou{
+    position:fixed; inset:0; z-index:200; background:var(--noir);
+    display:none; align-items:center; justify-content:center; padding:24px;
+  }
+  .verrouille .ecran-verrou{display:flex;}
+  .verrouille .wrap, .verrouille .overlay, .verrouille .toast{display:none !important;}
+  .verrou-boite{width:100%; max-width:300px; text-align:center;}
+  .verrou-icone{font-size:2.2rem; margin-bottom:8px;}
+  .verrou-boite h2{margin:0 0 4px; font-size:1.2rem;}
+  .verrou-boite .sub{color:var(--gris); font-size:0.85rem; margin-bottom:18px;}
+  .verrou-boite input{
+    width:100%; background:var(--noir-3); border:none; color:var(--blanc); text-align:center;
+    letter-spacing:0.5em; padding:14px; border-radius:var(--rayon-sm); font-size:1.3rem; font-family:inherit;
+  }
+  .verrou-boite input:focus{outline:2px solid var(--bleu); outline-offset:1px;}
+  .verrou-btn{width:100%; margin:14px 0 10px; padding:13px 0; border:none; border-radius:980px; font-size:0.95rem; font-weight:600; cursor:pointer;}
+
