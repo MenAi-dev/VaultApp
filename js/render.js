@@ -91,7 +91,10 @@ function rendre(){
 
   const pctG = budgetActuel ? Math.min(100, (totalDepense/budgetActuel)*100) : 0;
   const etat = etatBudget(totalDepense, budgetActuel, ctx.jour, ctx.joursMois);
-  document.querySelector('.resume').dataset.etat = etat.cle;
+  const carteResume = document.querySelector('.resume');
+  const etatAvant = carteResume.dataset.etat;
+  carteResume.dataset.etat = etat.cle;
+  if(etatAvant && etatAvant !== etat.cle) animerEtat(carteResume); // pas à la 1re ouverture, seulement quand l'état change
   document.getElementById('messageEtat').textContent = etat.message;
   document.getElementById('barreGlobale').style.width = pctG+'%';
   document.getElementById('pctGlobal').textContent = Math.round(pctG)+' %';

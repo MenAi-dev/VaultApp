@@ -32,6 +32,11 @@
       <p>Suivi des dépenses par poste, en FCFA.</p>
     </div>
     <div class="header-actions">
+      <button type="button" class="theme-btn" id="btnTheme" data-mode="auto" aria-label="Changer de thème">
+        <svg class="i-auto" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" class="plein"/></svg>
+        <svg class="i-clair" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
+        <svg class="i-sombre" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 13.3A8.5 8.5 0 1 1 10.7 3.5a6.8 6.8 0 0 0 9.8 9.8z"/></svg>
+      </button>
       <button class="cat-btn" id="btnAjoutCat">+ Catégorie</button>
     </div>
   </header>
@@ -234,6 +239,16 @@
     </div>
     <div class="zone-danger">
       <button type="button" class="btn-danger" id="btnReset">Supprimer toutes les dépenses</button>
+    </div>
+  </div>
+
+  <div class="historique" id="blocApparence">
+    <h2>Apparence</h2>
+    <div class="sous">Choisis le thème de l'application. « Auto » suit le réglage de ton téléphone.</div>
+    <div class="seg" role="group" aria-label="Thème">
+      <button type="button" class="seg-btn" data-theme-mode="auto" aria-pressed="true">Auto</button>
+      <button type="button" class="seg-btn" data-theme-mode="clair" aria-pressed="false">Clair</button>
+      <button type="button" class="seg-btn" data-theme-mode="sombre" aria-pressed="false">Sombre</button>
     </div>
   </div>
 
@@ -479,6 +494,8 @@
 <script src="js/modals.js"></script>
 <script src="js/donnees.js"></script>
 <script src="js/securite.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/animations.js"></script>
 <script src="js/recurrentes.js"></script>
 <script src="js/objectif.js"></script>
 <script src="js/events.js"></script>

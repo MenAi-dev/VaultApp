@@ -43,6 +43,7 @@ function toast(message, type, action){
   const el = document.getElementById('toast');
   if(!el) return;
   vibrer(type || '');
+  if(type === 'alerte' && typeof secouerModale === 'function') secouerModale(); // saisie refusée : la fenêtre ouverte tremble
   el.textContent = message;
   el.className = 'toast actif' + (type ? ' ' + type : '');
   if(action){

@@ -47,6 +47,19 @@ Toute la mise en forme est dans `css/oneui.css`, chargé en dernier : il redéfi
 - **Navigation** : barre flottante en bas (zone de pouce), avec les marges de sécurité des écrans à encoche (`viewport-fit=cover`).
 - **Police** : `system-ui` en premier (police One UI native sur Samsung), Inter hébergée en repli.
 
+## Thème clair / sombre / automatique
+
+- **Trois modes** : Auto (suit le téléphone), Clair, Sombre. Bouton rond en haut de l'écran (il fait défiler les trois modes) et sélecteur « Apparence » dans l'onglet Historique.
+- Le choix est mémorisé dans `localStorage` (clé `budgetTheme`). `js/verrou-precoce.js`, chargé dans `<head>`, le pose avant l'affichage : aucun éclair de la mauvaise couleur au démarrage.
+- Mécanisme : l'attribut `data-theme="light"` ou `"dark"` sur `<html>` (aucun attribut = automatique). Les couleurs du thème clair sont écrites **deux fois** dans `css/oneui.css` (bloc `@media (prefers-color-scheme: light)` et bloc `[data-theme="light"]`) : toute modification doit être faite aux deux endroits.
+- La couleur de la barre d'état du téléphone (`theme-color`) suit le thème choisi (`js/theme.js`).
+- Le changement est animé : un cercle de la nouvelle couleur s'étend depuis le bouton (View Transitions), ou un simple fondu sur les navigateurs plus anciens.
+
+## Animations (`js/animations.js` + section « Animations » de `css/oneui.css`)
+
+Ondulation au toucher sur les boutons · barres de progression qui se remplissent · icône de navigation qui rebondit · onglets qui glissent depuis le côté d'où on vient · messages qui arrivent en ressort · carte du mois qui émet une onde de couleur quand l'état change (et tremble si le budget est dépassé) · fenêtre qui tremble quand une saisie est refusée · confettis pour une entrée, une épargne ou un objectif atteint (une seule fois) · montant qui « respire » en état d'alerte.
+Toutes sont désactivées si « Réduire les animations » est activé sur le téléphone.
+
 ## Ce que la CSP autorise
 
 ```
@@ -79,8 +92,10 @@ img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; fo
 - PIN : formats, verrouillage au rechargement, blocage après 5 erreurs, reverrouillage après 61 s (pas après 5 s), changement et retrait du code.
 - Récupération : les deux boutons, échange réversible, « Code oublié ? ».
 - Design : les 4 états du budget, les couleurs des messages, thèmes sombre et clair, onglets Aperçu / Argent / Analyse / Historique, feuille de saisie.
-- **Batterie de non-régression rejouée sur la version finale (design inclus) : 16 contrôles sur 16 réussis** (XSS, validation, CSP, copie de secours, stockage plein, bornes, dates, fuseau, chiffrement, PIN, états et messages). Le cache hors ligne contient bien tous les fichiers de l'application.
+- Thème : cycle Auto → Clair → Sombre, mémorisation, valeur invalide ignorée, thème forcé alors que le téléphone est dans l'autre mode, combiné avec le verrouillage PIN.
+- Animations : ondulation (créée puis retirée, y compris 5 touchers rapides), confettis, secousse de saisie refusée, onde de la carte quand l'état change (et pas quand il reste le même), objectif fêté une seule fois, glissement directionnel des onglets.
+- **Batterie de non-régression rejouée sur la version finale : 25 contrôles sur 25 réussis** (XSS, validation, CSP, copie de secours, stockage plein, bornes, dates, fuseau, chiffrement, PIN, états et messages, thème, animations). Un défaut a été trouvé et corrigé pendant cette batterie : une ondulation pouvait rester dans la page si l'animation ne se terminait pas ; un retrait de sécurité temporisé a été ajouté. Le cache hors ligne contient bien tous les fichiers de l'application.
 
 ## Historique des versions du cache (`sw.js`)
 
-`v30` → `v36` au fil des corrections et du thème One UI (`css/oneui.css`). Toute nouvelle modification de code doit incrémenter ce numéro.
+`v30` → `v38` au fil des corrections, du thème One UI (`css/oneui.css`), du choix de thème et des animations. Toute nouvelle modification de code doit incrémenter ce numéro.

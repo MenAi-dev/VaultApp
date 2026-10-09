@@ -169,6 +169,7 @@ async function validerEntree(){
   rendre();
   declencherPulse(document.getElementById('totalEntrees'));
   toast('+' + fmt(montant) + ' FCFA reçus', 'entree');
+  confettis(document.getElementById('totalEntrees'), [couleurTheme('--sain'), couleurTheme('--accent'), '#FFD166']);
 }
 async function supprimerEntree(id){
   const e = entrees.find(x=>x.id===id);
@@ -217,6 +218,7 @@ async function validerEpargne(){
   rendre();
   declencherPulse(document.getElementById('totalEpargne'));
   toast(fmt(montant) + ' FCFA mis de côté, bravo', 'epargne');
+  confettis(document.getElementById('totalEpargne'), [couleurTheme('--epargne'), '#C9BEFF', '#FFFFFF']);
 }
 async function supprimerEpargne(id){
   const e = epargnes.find(x=>x.id===id);
