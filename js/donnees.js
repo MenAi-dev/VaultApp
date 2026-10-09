@@ -64,7 +64,8 @@ async function exporterJSON(mdp){
     app: 'mon-budget',
     version: 1,
     exporteLe: new Date().toISOString(),
-    donnees: { categories: CATEGORIES, depenses, entrees, epargnes, historiqueBudgets, recurrentes, objectifEpargne, dernierMoisVu }
+    donnees: { categories: CATEGORIES, depenses, entrees, epargnes, historiqueBudgets, recurrentes, objectifEpargne, dernierMoisVu },
+    preferences: prefs // thème, couleur, texte, prénom, alertes (voir reglages.js)
   };
   const chiffre = typeof mdp === 'string' && mdp !== '';
   const nom = 'mon-budget-' + (chiffre ? 'chiffre-' : '') + auj() + '.json';
@@ -233,6 +234,12 @@ async function importerFichier(fichier){
     recurrentes = rec;
     objectifEpargne = obj;
     dernierMoisVu = typeof d.dernierMoisVu === 'string' && RE_MOIS.test(d.dernierMoisVu) ? d.dernierMoisVu : null;
+    // Les réglages personnels voyagent avec la sauvegarde (une ancienne sauvegarde n'en contient pas : on garde les actuels).
+    if(brut.preferences && typeof brut.preferences === 'object'){
+      prefs = nettoyerPrefs(brut.preferences);
+      sauverPrefs();
+      appliquerPrefs();
+    }
     const enregistre = await sauvegarderTout();
     await verifierChangementMois();
     await appliquerRecurrentes();

@@ -9,7 +9,7 @@
 <title>Mon Budget</title>
 <script src="js/verrou-precoce.js"></script>
 <link rel="manifest" href="manifest.json">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#000000">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -37,6 +37,7 @@
     <button class="nav-btn" data-panel="entrees"><span class="nav-fond"></span><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="3"/><path d="M3 10h18"/><circle cx="16.5" cy="15" r="1.2"/></svg><span class="nav-txt">Argent</span></button>
     <button class="nav-btn" data-panel="analyse"><span class="nav-fond"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span class="nav-txt">Analyse</span></button>
     <button class="nav-btn" data-panel="historique"><span class="nav-fond"></span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="nav-txt">Historique</span></button>
+    <button class="nav-btn" data-panel="reglages"><span class="nav-fond"></span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 14.5a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3h0a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8v0a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg><span class="nav-txt">Réglages</span></button>
   </nav>
 
   <div class="panel actif" data-panel="apercu">
@@ -212,8 +213,60 @@
     </div>
   </div>
 
+  </div>
+
+  <div class="panel" data-panel="reglages">
+  <div class="historique" id="blocProfil">
+    <h2>Profil</h2>
+    <div class="sous">Pour que l'application te parle personnellement.</div>
+    <div class="champ">
+      <label for="prefPrenom">Ton prénom</label>
+      <input type="text" id="prefPrenom" maxlength="30" placeholder="ex : Mohamed" autocomplete="given-name">
+    </div>
+  </div>
+
+  <div class="historique" id="blocApparence">
+    <h2>Apparence</h2>
+    <div class="sous">Choisis le thème, la couleur principale et la taille du texte.</div>
+    <div class="reglage-titre">Thème</div>
+    <div class="seg" role="group" aria-label="Thème">
+      <button type="button" class="seg-btn" data-pref="theme" data-valeur="auto">Auto</button>
+      <button type="button" class="seg-btn" data-pref="theme" data-valeur="clair">Clair</button>
+      <button type="button" class="seg-btn" data-pref="theme" data-valeur="sombre">Sombre</button>
+    </div>
+    <div class="donnees-aide">« Auto » suit le réglage clair / sombre de ton téléphone.</div>
+    <div class="reglage-titre">Couleur principale</div>
+    <div class="pastilles" role="group" aria-label="Couleur principale">
+      <button type="button" class="pastille" data-pref="accent" data-valeur="bleu" aria-label="Bleu"></button>
+      <button type="button" class="pastille" data-pref="accent" data-valeur="turquoise" aria-label="Turquoise"></button>
+      <button type="button" class="pastille" data-pref="accent" data-valeur="rose" aria-label="Rose"></button>
+      <button type="button" class="pastille" data-pref="accent" data-valeur="indigo" aria-label="Indigo"></button>
+    </div>
+    <div class="reglage-titre">Taille du texte</div>
+    <div class="seg seg-2" role="group" aria-label="Taille du texte">
+      <button type="button" class="seg-btn" data-pref="texte" data-valeur="normal">Normale</button>
+      <button type="button" class="seg-btn" data-pref="texte" data-valeur="grand">Grande</button>
+    </div>
+  </div>
+
+  <div class="historique" id="blocAlertes">
+    <h2>Alertes</h2>
+    <div class="sous">Quand l'application doit te prévenir.</div>
+    <div class="reglage-titre">Prévenir quand un poste atteint</div>
+    <div class="seg" role="group" aria-label="Seuil d'alerte">
+      <button type="button" class="seg-btn" data-pref="seuil" data-valeur="70">70 %</button>
+      <button type="button" class="seg-btn" data-pref="seuil" data-valeur="80">80 %</button>
+      <button type="button" class="seg-btn" data-pref="seuil" data-valeur="90">90 %</button>
+    </div>
+    <div class="donnees-aide">de son budget du mois.</div>
+    <label class="ligne-reglage" for="prefVibrations">
+      <span><b>Vibrations</b><small>Un petit retour tactile à chaque action</small></span>
+      <input type="checkbox" id="prefVibrations" class="interrupteur" role="switch">
+    </label>
+  </div>
+
   <div class="historique" id="blocSauvegarde">
-    <h2>Sauvegarde</h2>
+    <h2>Sauvegarde et données</h2>
     <div class="sous">Tes données sont enregistrées uniquement sur cet appareil. Si tu changes de téléphone ou effaces les données du navigateur, elles disparaissent.</div>
     <button type="button" class="btn-sauvegarde" id="btnExportJson">💾 Sauvegarder mes données</button>
     <div class="donnees-info" id="infoSauvegarde"></div>
@@ -247,6 +300,16 @@
       <button type="button" class="lien-discret" id="btnPinDefinir">Définir un code PIN</button>
       <button type="button" class="lien-discret" id="btnPinRetirer" hidden>Désactiver le code</button>
     </div>
+  </div>
+
+  <div class="historique" id="blocApplication">
+    <h2>Application</h2>
+    <div class="sous">Version <b id="versionApp"></b></div>
+    <div class="donnees-actions">
+      <button type="button" class="lien-discret" id="btnMajApp">Mettre à jour l'application</button>
+      <button type="button" class="lien-discret" id="btnResetPrefs">Réinitialiser les réglages</button>
+    </div>
+    <div class="donnees-aide">« Mettre à jour » recharge la dernière version de l'application. Tes données ne sont pas touchées.</div>
   </div>
   </div>
 
@@ -481,6 +544,7 @@
 <script src="js/modals.js"></script>
 <script src="js/donnees.js"></script>
 <script src="js/securite.js"></script>
+<script src="js/reglages.js"></script>
 <script src="js/recurrentes.js"></script>
 <script src="js/objectif.js"></script>
 <script src="js/events.js"></script>

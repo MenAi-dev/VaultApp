@@ -42,6 +42,35 @@
   --rayon-sm:20px;
 }
 
+/* Thème clair. js/reglages.js (et verrou-precoce.js avant l'affichage) pose TOUJOURS data-theme="light" ou "dark" :
+   en mode « Auto », il choisit selon le téléphone. Un seul bloc à maintenir. */
+:root[data-theme="light"]{
+  color-scheme:light;
+  --noir:#F2F3F7;
+  --noir-2:#FFFFFF;
+  --noir-3:#ECEDF2;
+  --blanc:#17181C;
+  --gris:#6A6D78;
+  --gris-2:#555862;
+  --ligne:rgba(0,0,0,0.08);
+  --piste:rgba(0,0,0,0.08);
+  --ombre:0 8px 24px rgba(30,40,80,0.12);
+  --accent:#1F6BFF;
+  --sain:#0E9F6E;
+  --vigilance:#C47500;
+  --alerte:#D92D4A;
+  --epargne:#6B4EE6;
+}
+/* Couleur principale choisie dans les Réglages (le bleu est la couleur d'origine) */
+:root[data-accent="turquoise"]{--accent:#22C3E6; --sur-accent:#002A33;}
+:root[data-accent="rose"]{--accent:#FF7AB6; --sur-accent:#3A0A22;}
+:root[data-accent="indigo"]{--accent:#8B97FF; --sur-accent:#0B1040;}
+:root[data-theme="light"][data-accent="turquoise"]{--accent:#0A8FB0; --sur-accent:#FFFFFF;}
+:root[data-theme="light"][data-accent="rose"]{--accent:#D6336C; --sur-accent:#FFFFFF;}
+:root[data-theme="light"][data-accent="indigo"]{--accent:#4B5BD6; --sur-accent:#FFFFFF;}
+/* Taille du texte : tout est en rem, donc tout suit */
+:root[data-texte="grand"]{font-size:112.5%;}
+
 /* ---------- Page, police, en-tête ---------- */
 html{-webkit-tap-highlight-color:transparent;}
 body{
@@ -69,7 +98,7 @@ header > div:first-child{flex:1; min-width:0;}
   position:fixed; top:auto; left:50%; transform:translateX(-50%);
   bottom:calc(12px + env(safe-area-inset-bottom, 0px));
   width:min(calc(100% - 24px), 460px); margin:0; overflow:visible;
-  display:grid; grid-template-columns:repeat(4, 1fr); gap:2px; padding:6px;
+  display:grid; grid-template-columns:repeat(5, 1fr); gap:2px; padding:6px;
   border:none; border-radius:34px;
   background:color-mix(in srgb, var(--noir-2) 84%, transparent);
   -webkit-backdrop-filter:blur(24px) saturate(160%); backdrop-filter:blur(24px) saturate(160%);
@@ -79,7 +108,7 @@ header > div:first-child{flex:1; min-width:0;}
 .nav-btn{
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
   padding:9px 4px 8px; min-height:56px; border-radius:28px;
-  font-size:0.7rem; font-weight:600; color:var(--gris);
+  font-size:0.66rem; font-weight:600; color:var(--gris);
 }
 .nav-btn svg{width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round;}
 .nav-btn:hover{color:var(--blanc);}
@@ -247,6 +276,41 @@ header > div:first-child{flex:1; min-width:0;}
 .barre-col .barre-visuelle{width:min(26px, 80%); border-radius:10px 10px 4px 4px;}
 .barre-col .valeur-barre{font-size:0.66rem;}
 
+
+/* ---------- Page Réglages ---------- */
+.reglage-titre{margin:18px 0 8px; font-size:0.84rem; font-weight:700; color:var(--blanc);}
+.reglage-titre:first-of-type{margin-top:4px;}
+.seg{display:grid; grid-template-columns:repeat(3, 1fr); gap:4px; padding:4px; border-radius:22px; background:var(--noir-3);}
+.seg.seg-2{grid-template-columns:repeat(2, 1fr);}
+.seg-btn{
+  border:none; background:none; color:var(--gris); font:inherit; font-size:0.9rem; font-weight:600;
+  padding:13px 6px; border-radius:18px; cursor:pointer; min-height:48px;
+}
+.seg-btn[aria-pressed="true"]{background:var(--accent); color:var(--sur-accent);}
+.pastilles{display:flex; gap:14px; flex-wrap:wrap;}
+.pastille{
+  width:48px; height:48px; border-radius:50%; border:3px solid transparent; cursor:pointer; padding:0;
+  background:var(--c); box-shadow:inset 0 0 0 2px var(--noir-2);
+}
+.pastille[data-valeur="bleu"]{--c:#4C8DFF;}
+.pastille[data-valeur="turquoise"]{--c:#22C3E6;}
+.pastille[data-valeur="rose"]{--c:#FF7AB6;}
+.pastille[data-valeur="indigo"]{--c:#8B97FF;}
+.pastille[aria-pressed="true"]{border-color:var(--blanc);}
+.ligne-reglage{display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:20px; padding-top:16px; border-top:1px solid var(--ligne); cursor:pointer;}
+.ligne-reglage b{display:block; font-size:0.95rem;}
+.ligne-reglage small{display:block; margin-top:2px; color:var(--gris); font-size:0.78rem;}
+.interrupteur{
+  appearance:none; -webkit-appearance:none; flex:none; width:54px; height:32px; margin:0; border-radius:980px; cursor:pointer;
+  background:var(--noir-3); position:relative;
+}
+.interrupteur::after{
+  content:''; position:absolute; top:4px; left:4px; width:24px; height:24px; border-radius:50%;
+  background:var(--gris);
+}
+.interrupteur:checked{background:color-mix(in srgb, var(--accent) 40%, var(--noir-3));}
+.interrupteur:checked::after{transform:translateX(22px); background:var(--accent);}
+.interrupteur:focus-visible, .seg-btn:focus-visible, .pastille:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
 
 /* ---------- Écrans larges (tablette, Galaxy Z Fold déplié) ---------- */
 @media(min-width:700px){

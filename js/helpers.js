@@ -30,6 +30,7 @@ const esc = t => String(t == null ? '' : t).replace(/[&<>"']/g, c=>({'&':'&amp;'
 const VIBRATIONS = { '':[8], info:[10], succes:[14], entree:[12,40,12], epargne:[14,40,14,40,26], alerte:[34,50,34], danger:[80,60,80] };
 function vibrer(type){
   try{
+    if(typeof prefs !== 'undefined' && prefs.vibrations === false) return; // désactivées dans les Réglages
     if(!navigator.vibrate || !(navigator.userActivation && navigator.userActivation.hasBeenActive)) return;
     if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     navigator.vibrate(VIBRATIONS[type] || VIBRATIONS['']);

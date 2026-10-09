@@ -1,4 +1,8 @@
-const CACHE_NAME = 'mon-budget-cache-v41';
+// Numéro de version : À CHANGER à chaque modification de l'application (et dans js/config.js : VERSION_APP).
+// Tous les fichiers d'une version sont mis en cache ensemble ; l'application ne mélange donc jamais
+// d'anciens et de nouveaux fichiers. Quand ce numéro change, la nouvelle version remplace l'ancienne
+// et la page se recharge une fois (voir js/app.js).
+const CACHE_NAME = 'mon-budget-cache-v42';
 const URLS_A_METTRE_EN_CACHE = [
   './',
   './index.html',
@@ -17,6 +21,7 @@ const URLS_A_METTRE_EN_CACHE = [
   './js/modals.js',
   './js/donnees.js',
   './js/securite.js',
+  './js/reglages.js',
   './js/verrou-precoce.js',
   './js/recurrentes.js',
   './js/objectif.js',
@@ -30,7 +35,11 @@ const URLS_A_METTRE_EN_CACHE = [
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(URLS_A_METTRE_EN_CACHE))
+    caches.open(CACHE_NAME).then(cache =>
+      // cache: 'reload' : on va chercher les fichiers sur le serveur, jamais dans le cache HTTP du navigateur
+      // (sinon une ancienne copie d'un fichier pourrait être rangée dans la nouvelle version).
+      cache.addAll(URLS_A_METTRE_EN_CACHE.map(url => new Request(url, { cache: 'reload' })))
+    )
   );
   self.skipWaiting();
 });
@@ -46,21 +55,13 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Stale-while-revalidate : on répond tout de suite avec le cache (rapide, marche hors ligne),
-// et on récupère en arrière-plan la version à jour pour la prochaine ouverture.
-// Les correctifs arrivent donc même si on oublie de changer CACHE_NAME.
+// Cache d'abord (rapide, fonctionne hors ligne), réseau en secours.
 self.addEventListener('fetch', event => {
   const req = event.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
   event.respondWith(
-    caches.open(CACHE_NAME).then(cache =>
-      cache.match(req).then(enCache => {
-        const reseau = fetch(req).then(rep => {
-          if (rep && rep.ok) cache.put(req, rep.clone());
-          return rep;
-        }).catch(() => enCache || (req.mode === 'navigate' ? cache.match('./index.html') : Response.error()));
-        return enCache || reseau;
-      })
+    caches.match(req, { ignoreSearch: true }).then(enCache =>
+      enCache || fetch(req).catch(() => (req.mode === 'navigate' ? caches.match('./index.html') : Response.error()))
     )
   );
 });
